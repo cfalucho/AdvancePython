@@ -46,7 +46,7 @@ def _loop_tags(tag_iter, html_page, tag_dict):
         # If the tag is a closing tag
         # compare it with the tag in the top of the stack
         if re.match(r'</[^>]*>', tag.group()):
-            top_stack_tag = tag_stack[-1]              # grab the tag's object
+            top_stack_tag = tag_stack[-1]
             open_tag_name = top_stack_tag.group()
             close_tag_name = tag.group()
 
