@@ -35,30 +35,30 @@ def _clean_tags(tag):
     return re.sub(r'</?(\S+)[^>]*>', r'\1', tag.group())
 
 def _loop_tags(tag_iter, html_page, tag_dict):
+    tag_stack   = []
+    avoid_tags  = [ "meta", "link", "col"]
 
-    tag_stack = []
-    avoid_tags = ["col", "meta", "link"]
     for tag in tag_iter:
         clean_tag_name = _clean_tags(tag)
-
         if clean_tag_name in avoid_tags:
             continue
 
-        # print("Current Tag:", tag.group())
+        # If the tag is a closing tag
+        # compare it with the tag in the top of the stack
         if re.match(r'</[^>]*>', tag.group()):
-            top_stack_tag = tag_stack[-1]
+            top_stack_tag = tag_stack[-1]              # grab the tag's object
             open_tag_name = top_stack_tag.group()
             close_tag_name = tag.group()
 
-            # check if the closing tag matches the open tag in the stack
+            # Check if the closing tag matches the open tag
             if _check_if_tags_match(_update_tags(open_tag_name),
                                     _update_tags(close_tag_name)):
 
-                # Grab the full string from start of string to end of string
+                # Grab the full text from start of tag to end of tag
                 full_tag_string = _get_full_tag(top_stack_tag, tag,
                                                html_page)
 
-                # Add the full string to a dictionary
+                # Add the tag and full text to a dictionary
                 _tag_dict_items(clean_tag_name, full_tag_string, tag_dict)
 
                 # pop item from list
