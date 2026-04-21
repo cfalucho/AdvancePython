@@ -35,7 +35,6 @@ def _update_tags(tag):
 def _clean_tags(tag):
     return re.sub(r'</?(\S+)[^>]*>', r'\1', tag.group())
 
-
 def _loop_tags(tag_iter, html_page, tag_dict):
 
     tag_stack = []
@@ -84,51 +83,3 @@ class REScraper:
     def find_all(self, tag):
         print(self._tag_dict[tag])
         return self._tag_dict[tag]
-
-
-    # def get_user_input(self, user_input=None):
-    #     user_input = input("Enter a tag: ")
-    #
-    #     return user_input, self.find_all(user_input)
-    #
-    # def find_all(self, tag):
-    #     remove_tag = tag.strip("<>")
-    #     tag_list = []
-    #     element_found = self._is_element_found(remove_tag)
-    #     pattern_tag = fr'<{remove_tag}[\s\S]*?[\s\S]*?</{remove_tag}>'
-    #
-    #     if element_found:
-    #         for word in re.findall(pattern_tag, self._html_page):
-    #             tag_list.append(word)
-    #     else:
-    #         return f"{tag} not found."
-    #
-    #
-    #     combine_string = "".join(tag_list)
-    #     return combine_string
-    #
-    # def _is_element_found(self, tag):
-    #     # construct the tag
-    #     tag_constructed = _construct_open_tag(tag)
-    #     # check if the tag exists in the string
-    #     if tag_constructed in self._html_page:
-    #         return True
-    #     else:
-    #         return False
-    #
-    #
-    # def get_dict_items(self):
-    #     return self.dict_items
-    #
-    #
-    # def storage_format(self, key: str, value: str):
-    #     """
-    #     Pass in a key str and value str, then create a default dict
-    #
-    #     :return: a default dictionary
-    #     """
-    #     self.dict_items[key] = value
-    #
-    #
-    #     return self.dict_items
-

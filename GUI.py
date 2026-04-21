@@ -69,26 +69,26 @@ class GUI:
         self._clear_text()
         selected_tag = self._var_string_value.get()
         self._display_tags = self._scraper.find_all(selected_tag)
-        self.text_box_area.insert(tk.INSERT, self._display_tags)
+        self._text_box_area.insert(tk.INSERT, self._display_tags)
 
 
     def _clear_text(self):
         """
         Clears the display of Textbox Area
         """
-        return self.text_box_area.delete(1.0, tk.END)
+        return self._text_box_area.delete(1.0, tk.END)
 
 
     def _build_text_box(self):
         """
         Creates a textbox with a scrollable area
         """
-        self.text_box_area = scrolltext.ScrolledText(self._frame_right,
+        self._text_box_area = scrolltext.ScrolledText(self._frame_right,
                                              width=90,
                                              height=50,
                                              font=("Arial", 20))
-        self.text_box_area.pack(fill="x")
-        self.text_box_area.configure(state="normal")
+        self._text_box_area.pack(fill="x")
+        self._text_box_area.configure(state="normal")
 
     def _build_labels(self):
         """
@@ -104,13 +104,13 @@ class GUI:
         self._title_label_left.pack(side='top', fill='x')
 
         # === Right Labels ===
-        self.title_label_right = tk.Label(self._frame_right,
+        self._title_label_right = tk.Label(self._frame_right,
                                           text="Display HTML Tags",
                                           background="#3498DB",
                                           anchor='n',
                                           font=("Arial", 20, "bold"),
                                           padx=5, pady=5)
-        self.title_label_right.pack(side='top', fill='x')
+        self._title_label_right.pack(side='top', fill='x')
 
     def _build_frames(self):
         """
