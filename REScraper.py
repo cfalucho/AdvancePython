@@ -3,12 +3,6 @@ import re                           # Allows for RegEx
 import requests                     # Allows for HTTP requests
 from collections import defaultdict # Library to import default dict
 
-
-def _construct_open_tag(tag: str):
-    """Constructs open tag"""
-    open_tag = "<" + tag
-    return open_tag
-
 def request_web_page(url: str, timeout=10):
     try:
         # Test this block of code for errors, when making a request
@@ -21,55 +15,120 @@ def request_web_page(url: str, timeout=10):
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred", err)
 
+def _tag_dict_items(key, full_tag_string, tag_dict):
+    tag_dict[key].append(full_tag_string)
+    return tag_dict
+
+def _get_full_tag(open_tag, close_tag, html_page):
+    o_start, o_end = open_tag.span()
+    c_start, c_end = close_tag.span()
+    full_tag_string = html_page[o_start:c_end]
+    return full_tag_string
+
+def _check_if_tags_match(open_tag, close_tag):
+    return open_tag[1:] == close_tag[2:]
+
+def _update_tags(tag):
+    tag_updated = re.sub(r'<(/?\S*)[^>]*>', r'<\1>', tag)
+    return tag_updated
+
+def _clean_tags(tag):
+    return re.sub(r'</?(\S+)[^>]*>', r'\1', tag.group())
+
+
+def _loop_tags(tag_iter, html_page, tag_dict):
+
+    tag_stack = []
+    avoid_tags = ["col", "meta", "link"]
+    for tag in tag_iter:
+        clean_tag_name = _clean_tags(tag)
+
+        if clean_tag_name in avoid_tags:
+            continue
+
+        # print("Current Tag:", tag.group())
+        if re.match(r'</[^>]*>', tag.group()):
+            top_stack_tag = tag_stack[-1]
+            open_tag_name = top_stack_tag.group()
+            close_tag_name = tag.group()
+
+            # check if the closing tag matches the open tag in the stack
+            if _check_if_tags_match(_update_tags(open_tag_name),
+                                    _update_tags(close_tag_name)):
+
+                # Grab the full string from start of string to end of string
+                full_tag_string = _get_full_tag(top_stack_tag, tag,
+                                               html_page)
+
+                # Add the full string to a dictionary
+                _tag_dict_items(clean_tag_name, full_tag_string, tag_dict)
+
+                # pop item from list
+                tag_stack.pop()
+
+            else:
+                tag_stack.pop()
+        else:
+            tag_stack.append(tag)
+
 
 class REScraper:
     def __init__(self, url: str):
         self._html_page       = request_web_page(url).text
-        self.dict_items = defaultdict(str)
+        self._tag_dict        = defaultdict(list)
 
+        tags_iter = re.finditer(r'<[^>]+>', self._html_page)
+        _loop_tags(tags_iter, self._html_page, self._tag_dict)
 
-    def get_user_input(self, user_input=None):
-        user_input = input("Enter a tag: ")
-
-        return user_input, self.find_all(user_input)
 
     def find_all(self, tag):
-        remove_tag = tag.strip("<>")
-        tag_list = []
-        element_found = self._is_element_found(remove_tag)
-        pattern_tag = fr'<{remove_tag}[\s\S]*?[\s\S]*?</{remove_tag}>'
-
-        if element_found:
-            for word in re.findall(pattern_tag, self._html_page):
-                tag_list.append(word)
-        else:
-            return f"{tag} not found."
+        print(self._tag_dict[tag])
+        return self._tag_dict[tag]
 
 
-        combine_string = "".join(tag_list)
-        return combine_string
+    # def get_user_input(self, user_input=None):
+    #     user_input = input("Enter a tag: ")
+    #
+    #     return user_input, self.find_all(user_input)
+    #
+    # def find_all(self, tag):
+    #     remove_tag = tag.strip("<>")
+    #     tag_list = []
+    #     element_found = self._is_element_found(remove_tag)
+    #     pattern_tag = fr'<{remove_tag}[\s\S]*?[\s\S]*?</{remove_tag}>'
+    #
+    #     if element_found:
+    #         for word in re.findall(pattern_tag, self._html_page):
+    #             tag_list.append(word)
+    #     else:
+    #         return f"{tag} not found."
+    #
+    #
+    #     combine_string = "".join(tag_list)
+    #     return combine_string
+    #
+    # def _is_element_found(self, tag):
+    #     # construct the tag
+    #     tag_constructed = _construct_open_tag(tag)
+    #     # check if the tag exists in the string
+    #     if tag_constructed in self._html_page:
+    #         return True
+    #     else:
+    #         return False
+    #
+    #
+    # def get_dict_items(self):
+    #     return self.dict_items
+    #
+    #
+    # def storage_format(self, key: str, value: str):
+    #     """
+    #     Pass in a key str and value str, then create a default dict
+    #
+    #     :return: a default dictionary
+    #     """
+    #     self.dict_items[key] = value
+    #
+    #
+    #     return self.dict_items
 
-    def _is_element_found(self, tag):
-        # construct the tag
-        tag_constructed = _construct_open_tag(tag)
-        # check if the tag exists in the string
-        if tag_constructed in self._html_page:
-            return True
-        else:
-            return False
-
-
-    def get_dict_items(self):
-        return self.dict_items
-
-
-    def storage_format(self, key: str, value: str):
-        """
-        Pass in a key str and value str, then create a default dict
-
-        :return: a default dictionary
-        """
-        self.dict_items[key] = value
-
-
-        return self.dict_items

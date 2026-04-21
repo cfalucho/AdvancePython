@@ -140,7 +140,7 @@ class GUI:
         """
         Builds variables which will be used to get values
         """
-        self._radio_btn_list = ["<table>", "<tr>", "<th>", "<td>"]
+        self._radio_btn_list = ["table", "tr", "th", "td"]
         self._var_string_value = tk.StringVar(self._root,
                                               f"{self._radio_btn_list[0]}")
 
