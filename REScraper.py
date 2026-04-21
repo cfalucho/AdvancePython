@@ -22,8 +22,8 @@ def _tag_dict_items(key, full_tag_string, tag_dict):
 def _get_full_tag(open_tag, close_tag, html_page):
     o_start, o_end = open_tag.span()
     c_start, c_end = close_tag.span()
-    full_tag_string = html_page[o_start:c_end]
-    return full_tag_string
+    return html_page[o_start:c_end]
+
 
 def _check_if_tags_match(open_tag, close_tag):
     return open_tag[1:] == close_tag[2:]
