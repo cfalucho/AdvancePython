@@ -1,5 +1,4 @@
 import pandas as pd
-import tkinter as tk
 from DNAStrand import DNAStrand
 
 
@@ -15,3 +14,8 @@ class DNATableModel:
     def get_list(self):
         return self.series_from_lists.index.tolist()
 
+"""
+https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html
+
+https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series
+"""

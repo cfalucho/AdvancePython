@@ -12,16 +12,12 @@ AAT CTA ATT GGC ACT TGA -> remove white spaces, valid DNA codon, but invalid sta
 if start, protein OR stop codon are invalid -> False
 
 
-
 """
 # Remove whitespaces
 def clean_strand(strand):
     return strand.replace(" ", "")
 
 class DNAStrand:
-    # def __repr__(self):
-        # # This controls what you see when you print the object or the Series
-        # return f"DNAStrand({self.mutated_list})"
     def __init__ (self, raw_strand):
         self.raw_sequence = raw_strand
         self.clean_dna_strand = np.array(list(clean_strand(raw_strand.upper())))
@@ -41,7 +37,6 @@ class DNAStrand:
         # reshape the dna strand
         self.dna_array_shape = self.reshape(self.clean_dna_strand)
 
-
         # need to validate for 3 letter seq - MUST DO
 
         # break the full strand into smaller strands for validation
@@ -54,7 +49,6 @@ class DNAStrand:
             ['C' 'T' 'G']
         ]
         """
-
         self.stop_codon = self.dna_array_shape[-1]
 
 
@@ -163,7 +157,15 @@ class DNAStrand:
 
 
 
+"""
+Didn't use numpy.char.join because it didn't join whitespaces for me
+https://numpy.org/doc/2.1/reference/generated/numpy.char.join.html
 
+https://stackoverflow.com/questions/66872545/how-to-get-np-char-add-to-put-a-space-between-the-concatenated-strings
+
+To understand how to use numpy.any()
+https://www.geeksforgeeks.org/python/numpy-any-in-python/
+"""
 
 
 

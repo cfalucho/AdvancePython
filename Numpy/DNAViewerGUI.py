@@ -18,7 +18,7 @@ class DNAViewerGUI:
 
         self.listbox.bind('<<ListboxSelect>>', self.pop_up_window)
 
-        self.root.mainloop()
+        self.run()
 
     def pop_up_window(self, event):
         win_prompt = tk.Toplevel(self.root, background="grey")
@@ -73,6 +73,7 @@ class DNAViewerGUI:
                 start_codon_text_widget.config(bg="#fbeeb8")
                 protein_region_text_widget.config(bg="#fbeeb8")
                 stop_codon_text_widget.config(bg="#fbeeb8")
+                win_prompt.title(f"{strand_name}  MUTATED")
 
 
             start_codon_text_widget.grid(row=0, column=0)
@@ -84,7 +85,8 @@ class DNAViewerGUI:
             stop_codon_text_widget.insert("end", f"{stop_codon}")
 
 
-
+    def run(self):
+        return self.root.mainloop()
 
 """
 https://tk-tutorial.readthedocs.io/en/latest/listbox/listbox.html
