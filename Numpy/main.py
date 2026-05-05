@@ -57,7 +57,7 @@ def main():
     dna_strands_arr = np.array(html_scraper.find_all("td"))
     # print(dna_strands_arr)
 
-    # Pass to the Pandas Dashboard to clean up the data
+    # pass to the Pandas Dashboard to clean up the data
     pandas_series = DNATableModel(strands_name_arr, dna_strands_arr)
 
     # pass to DNAViewerGUI
@@ -65,7 +65,7 @@ def main():
 
 
     """
-        ============= !!!  TESTING PURPOSES =============
+        ============= !!!  TESTING PURPOSES !!! =============
     """
     # strand_1 = "ATGTGCCTACTGTAG"
     # strand_2 = "ATG TTT ATT GGC ACT TAA"

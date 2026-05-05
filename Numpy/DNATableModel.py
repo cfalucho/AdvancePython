@@ -7,7 +7,9 @@ class DNATableModel:
         self.series_from_lists = pd.Series(dna_seq_arr, index=strands_name_arr)
         self.dna_objects_series = self.series_from_lists.apply(DNAStrand)
 
-
+    # ========================================
+    #               Getters
+    # ========================================
     def get_objects(self):
         return self.dna_objects_series
 

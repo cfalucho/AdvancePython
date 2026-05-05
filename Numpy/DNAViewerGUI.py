@@ -13,7 +13,6 @@ class DNAViewerGUI:
 
         self.create_frame()
 
-
         self.scrollbar = self.create_scrollable_list()
         self.listbox = self.create_listbox()
 
@@ -30,31 +29,27 @@ class DNAViewerGUI:
     def create_listbox(self):
         self.listbox = tk.Listbox(self.root,
                                   font=("Inter", 32),
-                                  width=20,
+                                  width=23,
                                   height=100,
                                   border=1)
         self.listbox.insert(tk.END, *self.strand_names)
         self.listbox.pack(pady=20)
         self.listbox.bind('<<ListboxSelect>>', self.pop_up_window)
-
-
         return self.listbox
 
     def create_frame(self):
         self.root = tk.Tk()
         self.root.title("DNA Strand")
-        self.root.geometry("550x500")
+        self.root.geometry("500x500")
         self.root.configure(bg="#494D52")
         self.root.resizable(False, False)
 
 
     # this is called with an item is selected
     def pop_up_window(self, event):
-        
         win_prompt = tk.Toplevel(self.root, background="grey")
         win_prompt.geometry("600x100")
         win_prompt.resizable(False, False)
-
 
         selection = event.widget.curselection()
         if selection:
@@ -69,27 +64,27 @@ class DNAViewerGUI:
             mutated_str = codon_sequence_list[0]
 
             # assign the color index item into a variable
-            start_codon = codon_sequence_list[1][0]
-            start_codon_color = codon_sequence_list[1][1]
+            start_codon_str = codon_sequence_list[1][0]
+            start_codon_color_str = codon_sequence_list[1][1]
 
-            protein_region = codon_sequence_list[2][0]
-            protein_region_color = codon_sequence_list[2][1]
+            protein_region_str = codon_sequence_list[2][0]
+            protein_region_color_str = codon_sequence_list[2][1]
 
-            stop_codon = codon_sequence_list[3][0]
-            stop_codon_color = codon_sequence_list[3][1]
+            stop_codon_str = codon_sequence_list[3][0]
+            stop_codon_color_str = codon_sequence_list[3][1]
 
             # builds the text for each codon sequence
             # apply the corresponding color to each codon sequence
             start_codon_text_widget = tk.Text(win_prompt,
                                               font=("Arial", 30, "bold"),
-                                              fg=start_codon_color,
+                                              fg=start_codon_color_str,
                                               height=5,
                                               width=5,
                                               highlightthickness=0)
 
             protein_region_text_widget = tk.Text(win_prompt,
                                                  font=("Arial", 30, "bold"),
-                                                 fg=protein_region_color,
+                                                 fg=protein_region_color_str,
                                                  width=23,height=5,
                                                  highlightthickness=0
                                                  )
@@ -97,7 +92,7 @@ class DNAViewerGUI:
 
             stop_codon_text_widget = tk.Text(win_prompt,
                                              font=("Arial", 30, "bold"),
-                                             fg=stop_codon_color,
+                                             fg=stop_codon_color_str,
                                              width=7,height=5,
                                              highlightthickness=0)
 
@@ -105,15 +100,15 @@ class DNAViewerGUI:
             protein_region_text_widget.grid(row=0, column=1)
             stop_codon_text_widget.grid(row=0,column=2)
 
-            start_codon_text_widget.insert("end", f"{start_codon}")
-            protein_region_text_widget.insert("end", f"{protein_region}")
-            stop_codon_text_widget.insert("end", f"{stop_codon}")
+            start_codon_text_widget.insert("end", f"{start_codon_str}")
+            protein_region_text_widget.insert("end", f"{protein_region_str}")
+            stop_codon_text_widget.insert("end", f"{stop_codon_str}")
 
             if mutated_str == "Mutated":
                 start_codon_text_widget.config(bg="#fbeeb8")
                 protein_region_text_widget.config(bg="#fbeeb8")
                 stop_codon_text_widget.config(bg="#fbeeb8")
-                win_prompt.title(f"{strand_name}  MUTATED")
+                win_prompt.title(f"{strand_name} {mutated_str}")
 
 
     def run(self):
