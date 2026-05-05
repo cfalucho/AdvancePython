@@ -1,13 +1,11 @@
 import urllib3
 import requests
 
-
 from REScraper import REScraper
 from BS4Scraper import BS4Scraper
 from DNATableModel import DNATableModel
 from DNAViewerGUI import DNAViewerGUI
 from GUI import GUI
-import numpy as np
 
 urllib3.disable_warnings()
 
@@ -23,10 +21,10 @@ def request_web_page(url, timeout=10):
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred", err)
 
-def open_file(file):
+def open_file(file_path):
     try:
-        if file:
-            with open(file, "r", encoding="utf-8") as file_handle:
+        if file_path:
+            with open(file_path, "r", encoding="utf-8") as file_handle:
                 return file_handle.read()
         return None
     except Exception as e:
@@ -43,18 +41,17 @@ def scrape_web_page(url):
 def main():
     # url = ("https://mdn.github.io/learning-area/html"
     #        "/tables/assessment-finished/planets-data.html")
-
-    html_source = "DNATable.html"
+    html_file = "DNATable.html"
 
     # Open the HTML file
-    o_file = open_file(html_source)
+    o_file = open_file(html_file)
 
     # Pass the file to the Beautiful Soup Class to parse it
     html_scraper = BS4Scraper(o_file)
 
-    strands_name_arr = np.array(html_scraper.find_all("th"))
+    strands_name_arr = html_scraper.find_all("th")
     # print(strands_name_arr)
-    dna_strands_arr = np.array(html_scraper.find_all("td"))
+    dna_strands_arr = html_scraper.find_all("td")
     # print(dna_strands_arr)
 
     # pass to the Pandas Dashboard to clean up the data

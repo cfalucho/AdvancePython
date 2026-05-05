@@ -32,6 +32,7 @@ def has_valid_stop(stop_codon):
                                ["T", "A", "G"],
                                ["T", "G", "A"]
                               ])
+    # result = np.any(np.all(stop_codon_arr == stop_codon, axis=1))
     return np.any(np.all(stop_codon_arr == stop_codon, axis=1))
 
 # checks protein region
@@ -126,17 +127,14 @@ class DNAStrand:
         """
         # check start codon
         if not has_valid_start(self.start_codon):
-            # print("Start codon is valid.")
             self.start_codon_flag = True
 
-        # check protein
+        # check protein region
         if not has_valid_protein(self.protein_region_codon):
-            # print("Protein region valid.")
             self.protein_region_flag = True
 
         # check stop codon
         if has_valid_stop(self.stop_codon):
-            # print("Stop codon is valid.")
             self.stop_codon_flag = True
 
         # if this returns True, strand is mutated
@@ -145,8 +143,6 @@ class DNAStrand:
                                  self.protein_region_flag,
                                  self.stop_codon_flag)
         return self.is_strand_mutated
-
-    # check if the strand is mutated, basically an invalid strand
 
     # ========================================
     #               Getters

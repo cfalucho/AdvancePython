@@ -11,6 +11,7 @@ class DNAViewerGUI:
         self.strand_names = dna_objects_series.get_list()
         self.series = dna_objects_series
 
+        # create frame
         self.create_frame()
 
         self.scrollbar = self.create_scrollable_list()
@@ -39,7 +40,7 @@ class DNAViewerGUI:
 
     def create_frame(self):
         self.root = tk.Tk()
-        self.root.title("DNA Strand")
+        self.root.title("DNA Strand App")
         self.root.geometry("500x500")
         self.root.configure(bg="#494D52")
         self.root.resizable(False, False)
