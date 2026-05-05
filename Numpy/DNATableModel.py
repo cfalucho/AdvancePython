@@ -14,7 +14,7 @@ class DNATableModel:
     def get_list(self):
         return self.series_from_lists.index.tolist()
 
-"""
+""" References used
 https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html
 
 https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series

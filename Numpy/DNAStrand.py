@@ -157,7 +157,8 @@ class DNAStrand:
 
 
 
-"""
+"""References used
+
 Didn't use numpy.char.join because it didn't join whitespaces for me
 https://numpy.org/doc/2.1/reference/generated/numpy.char.join.html
 

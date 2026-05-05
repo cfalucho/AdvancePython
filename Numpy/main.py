@@ -64,8 +64,6 @@ def main():
     DNAViewerGUI(pandas_series)
 
 
-
-
     """
         ============= !!!  TESTING PURPOSES =============
     """
