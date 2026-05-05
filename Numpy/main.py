@@ -1,14 +1,13 @@
 import urllib3
 import requests
 
-import pandas as pd
+
 from REScraper import REScraper
 from BS4Scraper import BS4Scraper
-from DNATableModel import PandasDashboard
-from DNAStrand import DNAStrand
+from DNATableModel import DNATableModel
+from DNAViewerGUI import DNAViewerGUI
 from GUI import GUI
 import numpy as np
-
 
 urllib3.disable_warnings()
 
@@ -47,36 +46,35 @@ def main():
 
     html_source = "DNATable.html"
 
-
     # Open the HTML file
     o_file = open_file(html_source)
-
-
 
     # Pass the file to the Beautiful Soup Class to parse it
     html_scraper = BS4Scraper(o_file)
 
-
-    # strands_name_arr = np.array(html_scraper.find_all("th"))
+    strands_name_arr = np.array(html_scraper.find_all("th"))
     # print(strands_name_arr)
-    # dna_strands_arr = np.array(html_scraper.find_all("td"))
+    dna_strands_arr = np.array(html_scraper.find_all("td"))
     # print(dna_strands_arr)
+
     # Pass to the Pandas Dashboard to clean up the data
-    # dashboard = PandasDashboard(strands_name_arr, dna_strands_arr)
+    pandas_series = DNATableModel(strands_name_arr, dna_strands_arr)
+
+    # pass to DNAViewerGUI
+    DNAViewerGUI(pandas_series)
 
 
-    strand_1 = "ATGTGCCTACTGTAG"
+
+
+    """
+        ============= !!!  TESTING PURPOSES =============
+    """
+    # strand_1 = "ATGTGCCTACTGTAG"
     # strand_2 = "ATG TTT ATT GGC ACT TAA"
-    strand_3 = "ATGCTTCTGGTACGgGTGGTCGGGGCAACGTAA"
+    # strand_3 = "ATGCTTCTGGTACGbGTGGTCGGGGCAACGTAA"
     # strand_39 = "ATGGGCACAGAAGGAAGAATTAATAGACCGTGA"
 
-    codon_color_pair_list = DNAStrand(strand_1)
-    # codon_color_pair_list.split_string_into_codons()
-
-
-    # Display it on the Web Scraper App
-    # GUI(html_scraper)
-
+    # DNAStrand(strand_3)
 
 
     # ==============================================================
