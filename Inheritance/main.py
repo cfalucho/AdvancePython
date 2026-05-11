@@ -3,6 +3,7 @@ import requests
 
 from REScraper import REScraper
 from BS4Scraper import BS4Scraper
+from DNAStrand import DNAStrand
 from DNATableModel import DNATableModel
 from DNAViewerGUI import DNAViewerGUI
 from GUI import GUI
@@ -41,7 +42,7 @@ def scrape_web_page(url):
 def main():
     # url = ("https://mdn.github.io/learning-area/html"
     #        "/tables/assessment-finished/planets-data.html")
-    html_file = "DNATable.html"
+    html_file = "DnaRna_Table.html"
 
     # Open the HTML file
     o_file = open_file(html_file)
@@ -56,20 +57,24 @@ def main():
 
     # pass to the Pandas Dashboard to clean up the data
     pandas_series = DNATableModel(strands_name_arr, dna_strands_arr)
-
-    # pass to DNAViewerGUI
+    #
+    # # pass to DNAViewerGUI
     DNAViewerGUI(pandas_series)
 
 
     """
         ============= !!!  TESTING PURPOSES !!! =============
     """
-    # strand_1 = "ATGTGCCTACTGTAG"
-    # strand_2 = "ATG TTT ATT GGC ACT TAA"
-    # strand_3 = "ATGCTTCTGGTACGbGTGGTCGGGGCAACGTAA"
-    # strand_39 = "ATGGGCACAGAAGGAAGAATTAATAGACCGTGA"
+    strand_1 = "ATGTGCCTACTGTAG"
+    strand_2 = "ATG TTT ATT GGC ACT TAA"
+    strand_3 = "AATCTAATTGGCACTTGA"
+    strand_4 = "ATGCTTCTGGTACGbGTGGTCGGGGCAACGTAA"
+    strand_39 = "ATGGGCACAGAAGGAAGAATTAATAGACCGTGA"
+    strand_86 = "ATGATCCATAGACGTTTCTTGCGTAGAACG"
+    segment_1 = "AUGGUCUGCUAUUGUCGUCGAGUCCUUCGCUAA"
+    segment_2 = "0e#aO#F!U"
 
-    # DNAStrand(strand_3)
+    # DNAStrand(strand_39)
 
 
     # ==============================================================

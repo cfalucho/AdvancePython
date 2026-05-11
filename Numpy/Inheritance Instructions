@@ -1,0 +1,52 @@
+Assignment:  Inheritance
+This assignment extends the system you built in the previous exercise, where you created classes for bases, codons, and protein regions. The biological theme remains the same, but the real purpose here is to practice inheritance, method overriding, and clean class design. You will now introduce RNA alongside DNA, reuse the logic you already wrote, and build a small classification system that can read strand segments from a file and determine whether each one is DNA, RNA, Mutation, or Noise.
+
+DNA vs. RNA in This Assignment
+In this assignment, you only need to care about the characters (bases) that appear in each type of strand and how they are used in codons. The table below summarizes the differences you should rely on in your code.
+
+Feature	DNA	RNA
+Allowed bases	A, T, C, G	A, U, C, G
+Unique base	Uses T (thymine)	Uses U (uracil) instead of T
+Start codon	ATG	AUG
+Stop codons	TAA, TAG, TGA	UAA, UAG, UGA
+Validation rule	All characters must be in A/T/C/G and structure valid	All characters must be in A/U/C/G and structure valid
+When you classify segments, use these differences to decide whether a valid, well‑structured segment is DNA or RNA. If a segment uses only biological characters but fails structural checks, treat it as a Mutation. If it contains any characters outside A, T, C, G, and U, treat it as Noise.
+
+Part A — Building on Your Earlier Components
+Continue working with the same small building blocks: individual nucleotide characters wrapped in Base objects, and groups of three bases forming Codon and protein region objects. These pieces should already know how to validate themselves and present clean string representations. Codons will later be grouped into protein regions, but for this assignment they mainly need to behave predictably so larger structures can rely on them.
+
+A Base represents a single character (A, T, C, G, or U) and knows how to validate itself.
+A Codon stores exactly three Base objects and can report whether it is valid.
+A Protein Region is the area between the start and stop codons.
+Mutation is any Base character that is not A, T, C, G, U.
+Noise is non-structured codon collection.
+Part B — Introducing the Segment Hierarchy
+A Segment represents one chunk of a strand. It might turn out to be DNA, RNA, a Mutation, or simply Noise. All segments share the same basic responsibilities: they store the raw string, convert that string into Base objects, and can group those bases into codons. Because this logic is shared, it belongs in a single base class called Segment.
+
+From that base class, you will create four subclasses that each enforce their own rules:
+
+Segment — a collection of codons.
+DNA — accepts only A, T, C, G and must have valid codon structure.
+RNA — accepts only A, U, C, G and must have valid codon structure.
+Mutation — uses only biological characters but fails structural codon validation.
+Noise — contains non‑biological characters or fails codon structure.
+Each subclass will override methods such as is_valid() and to_str() so that the shared behavior lives in Segment and the differences live in the subclasses.
+
+Part C — The StrandFactory
+Keep your code organized by creating a StrandFactory that receives a raw chunk of text and decides what kind of segment it should become. The factory will try each possibility in a specific order so that classification is predictable:
+
+Try DNA
+Then RNA
+Then Mutation
+If none match, classify it as Noise
+The factory returns fully constructed segment objects, allowing the rest of your program to work with clean, typed objects rather than raw strings.
+
+Part D — The Strand Class
+A Strand represents one full line from the input file. It reads the line, splits it into raw chunks, sends each chunk to the StrandFactory, and stores the resulting segment objects. When asked to render itself, the Strand simply joins the string output of each segment. DNA and RNA appear unchanged, while Mutation and Noise appear wrapped in their respective tags. The Strand class does not perform classification itself; it delegates that work to the factory.
+
+Input and Output
+The input file DnaRna_Table.html,contains 100 DNA, RNA, Mutations or Noise.  Send each segment through the StrandFactory to identify the strand.  The strands ID can be:  [DNA], [RNA], [MUT], [NOI].  Output each strand first by it's ID, followed by the segment grouped by codons.
+
+Input Segment: ATGAGAAGGGCCAAAATTTAA
+
+Output: [DNA] ATG  AGA  AGG  GCC  AAA  ATT  TAA

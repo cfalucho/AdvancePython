@@ -59,7 +59,6 @@ class DNAViewerGUI:
             win_prompt.title(strand_name)
             item_selected = self.series.dna_objects_series[strand_name]
             codon_sequence_list = item_selected.get_strand()
-            print(codon_sequence_list)
 
             # assign mutated string
             mutated_str = codon_sequence_list[0]
@@ -90,7 +89,6 @@ class DNAViewerGUI:
                                                  highlightthickness=0
                                                  )
 
-
             stop_codon_text_widget = tk.Text(win_prompt,
                                              font=("Arial", 30, "bold"),
                                              fg=stop_codon_color_str,
@@ -111,8 +109,8 @@ class DNAViewerGUI:
                 stop_codon_text_widget.config(bg="#fbeeb8")
                 win_prompt.title(f"{strand_name} {mutated_str}")
 
-
     def run(self):
+        print("Running app..")
         return self.root.mainloop()
 
 """ References used

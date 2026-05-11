@@ -33,19 +33,26 @@ def has_valid_stop(stop_codon):
                                ["T", "G", "A"]
                               ])
     # result = np.any(np.all(stop_codon_arr == stop_codon, axis=1))
+    print(stop_codon)
+    result = np.all(stop_codon_arr == stop_codon, axis=1)
+    print(result)
+    is_equal = np.any(np.all(stop_codon_arr == stop_codon, axis=1))
+    print(is_equal)
     return np.any(np.all(stop_codon_arr == stop_codon, axis=1))
 
 # checks protein region
 def has_valid_protein(protein_strand):
     codon = ['A', 'T', 'C', 'G']
-    codon_indices = np.isin(protein_strand, codon)
-    return np.any(codon_indices == False)
+    is_equal = np.isin(protein_strand, codon)
+    return np.any(is_equal != False)
 
 # checks start codon
 def has_valid_start(start_codon):
     start_codon_arr = np.array(['A', 'T', 'G'])
-    codon_indices = np.array_equal(start_codon_arr, start_codon)
-    return np.any(codon_indices == False)
+    is_equal = np.array_equal(start_codon_arr, start_codon)
+    return is_equal
+
+
 
 # reshape the list to a 2d array
 def reshape(strand_list):
@@ -126,11 +133,11 @@ class DNAStrand:
 
         """
         # check start codon
-        if not has_valid_start(self.start_codon):
+        if has_valid_start(self.start_codon):
             self.start_codon_flag = True
 
         # check protein region
-        if not has_valid_protein(self.protein_region_codon):
+        if has_valid_protein(self.protein_region_codon):
             self.protein_region_flag = True
 
         # check stop codon

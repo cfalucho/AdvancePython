@@ -1,5 +1,5 @@
 import pandas as pd
-from DNAStrand import DNAStrand
+from DNAStrand import DNAStrand, Segment
 
 """
 Could use some improvements can be made here to check for strand's without a value
@@ -12,8 +12,10 @@ Such that is there a value for each strand?
 class DNATableModel:
     def __init__(self, strands_name_arr, dna_seq_arr):
         self.series_from_lists = pd.Series(dna_seq_arr, index=strands_name_arr)
-        print(self.series_from_lists)
+
+        # print(self.series_from_lists)
         self.dna_objects_series = self.series_from_lists.apply(DNAStrand)
+
 
     # ========================================
     #               Getters
