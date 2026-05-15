@@ -1,0 +1,26 @@
+category,name,attr
+Star,Sun,G2V
+Star,Sirius,A1V
+Star,Vega,A0V
+Star,Betelgeuse,M2Iab
+Star,Rigel,B8Ia
+Planet,Mercury,88 days
+Planet,Earth,365 days
+Planet,Mars,687 days
+Planet,Jupiter,12 years
+Planet,Saturn,29 years
+DwarfPlanet,Ceres,1801
+DwarfPlanet,Pluto,1930
+DwarfPlanet,Haumea,2004
+DwarfPlanet,Makemake,2005
+DwarfPlanet,Eris,2005
+Moon,Moon,Earth
+Moon,Phobos,Mars
+Moon,Deimos,Mars
+Moon,Io,Jupiter
+Moon,Europa,Jupiter
+Moon,Ganymede,Jupiter
+Moon,Callisto,Jupiter
+Moon,Titan,Saturn
+Moon,Enceladus,Saturn
+Moon,Mimas,Saturn

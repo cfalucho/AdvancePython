@@ -69,7 +69,7 @@ def main():
 
 
     # Display it on the Web Scraper App
-    # GUI(html_scraper)
+    GUI(html_scraper)
 
 
 

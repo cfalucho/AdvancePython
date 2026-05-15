@@ -23,7 +23,7 @@ class DNAViewerGUI:
         self.run()
 
     def create_scrollable_list(self):
-        scrollbar = Scrollbar(self.root)
+        scrollbar = Scrollbar(self.root, background="blue")
         scrollbar.pack(side="right", fill="both")
         return scrollbar
 
