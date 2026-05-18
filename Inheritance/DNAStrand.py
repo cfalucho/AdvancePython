@@ -188,14 +188,15 @@ class DNAStrand:
     #               Getters
     # ========================================
     def get_codon_list(self):
+        print(self.codon_list)
         return self.codon_list
 
     def get_mutation_status(self):
         return self.is_mutated
 
-class Segment(DNAStrand):
-    def __init__(self, raw_strand):
-        super().__init__(raw_strand)
+# class Segment(DNAStrand):
+#     def __init__(self, raw_strand):
+#         super().__init__(raw_strand)
 
 
 

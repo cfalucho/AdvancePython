@@ -10,6 +10,7 @@ class DNAViewerGUI:
         self.root = None
         self.strand_names = dna_objects_series.get_list()
         self.series = dna_objects_series
+        print(self.series.dna_objects_series["strand-2"].get_strand())
 
         # create frame
         self.create_frame()
@@ -58,6 +59,7 @@ class DNAViewerGUI:
             strand_name = event.widget.get(index)
             win_prompt.title(strand_name)
             item_selected = self.series.dna_objects_series[strand_name]
+            print(item_selected.get_strand())
             codon_sequence_list = item_selected.get_strand()
 
             # assign mutated string

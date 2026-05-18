@@ -6,6 +6,9 @@ from BS4Scraper import BS4Scraper
 from DNAStrand import DNAStrand
 from DNATableModel import DNATableModel
 from DNAViewerGUI import DNAViewerGUI
+from Strand import Strand
+import pandas as pd
+
 from GUI import GUI
 
 urllib3.disable_warnings()
@@ -56,10 +59,16 @@ def main():
     # print(dna_strands_arr)
 
     # pass to the Pandas Dashboard to clean up the data
-    pandas_series = DNATableModel(strands_name_arr, dna_strands_arr)
+    # pandas_series = DNATableModel(strands_name_arr, dna_strands_arr)
+    series_from_lists = pd.Series(dna_strands_arr)
+
+    # dna_objects_series = series_from_lists.apply(Strand)
+    Strand("CACAZU#9GXG1TGAXACA")
+
+
     #
-    # # pass to DNAViewerGUI
-    DNAViewerGUI(pandas_series)
+    #  pass to DNAViewerGUI
+    # DNAViewerGUI(pandas_series)
 
 
     """
@@ -71,10 +80,19 @@ def main():
     strand_4 = "ATGCTTCTGGTACGbGTGGTCGGGGCAACGTAA"
     strand_39 = "ATGGGCACAGAAGGAAGAATTAATAGACCGTGA"
     strand_86 = "ATGATCCATAGACGTTTCTTGCGTAGAACG"
-    segment_1 = "AUGGUCUGCUAUUGUCGUCGAGUCCUUCGCUAA"
+    segment_1 = "AUGCUAACUUCUAUACUAGUAUGGGAUUCGUGG"
     segment_2 = "0e#aO#F!U"
+    segment_3 = "ATGGGACGCGTGGCATCTAATTGA"
+    segment_12 = "CZAA9TAATX1#A9"
+    segment_13 = "9@AGC#GATTU@XUZAX"
+    segment_14 = "@1X CCX G#U CC# CA1 @AC CTC"
 
-    # DNAStrand(strand_39)
+
+    # Strand(dna_strands_arr)
+
+
+    # DNAViewerGUI(result)
+
 
 
     # ==============================================================

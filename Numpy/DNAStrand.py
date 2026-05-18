@@ -33,11 +33,11 @@ def has_valid_stop(stop_codon):
                                ["T", "G", "A"]
                               ])
     # result = np.any(np.all(stop_codon_arr == stop_codon, axis=1))
-    print(stop_codon)
+    # print(stop_codon)
     result = np.all(stop_codon_arr == stop_codon, axis=1)
-    print(result)
+    # print(result)
     is_equal = np.any(np.all(stop_codon_arr == stop_codon, axis=1))
-    print(is_equal)
+    # print(is_equal)
     return np.any(np.all(stop_codon_arr == stop_codon, axis=1))
 
 # checks protein region

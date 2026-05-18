@@ -50,4 +50,4 @@ The input file DnaRna_Table.html,contains 100 DNA, RNA, Mutations or Noise.  Sen
 
 Input Segment: ATGAGAAGGGCCAAAATTTAA
 
-Output: [DNA] ATG  AGA  AGG  GCC  AAA  ATT  TAA  g
+Output: [DNA] ATG  AGA  AGG  GCC  AAA  ATT  TAA
