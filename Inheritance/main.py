@@ -3,12 +3,8 @@ import requests
 
 from REScraper import REScraper
 from BS4Scraper import BS4Scraper
-from DNAStrand import DNAStrand
-from DNATableModel import DNATableModel
-from DNAViewerGUI import DNAViewerGUI
 from Strand import Strand
 import pandas as pd
-
 from GUI import GUI
 
 urllib3.disable_warnings()
@@ -58,17 +54,10 @@ def main():
     dna_strands_arr = html_scraper.find_all("td")
     # print(dna_strands_arr)
 
-    # pass to the Pandas Dashboard to clean up the data
-    # pandas_series = DNATableModel(strands_name_arr, dna_strands_arr)
-    series_from_lists = pd.Series(dna_strands_arr)
 
-    # dna_objects_series = series_from_lists.apply(Strand)
-    Strand("CACAZU#9GXG1TGAXACA")
+    Strand(dna_strands_arr)
 
 
-    #
-    #  pass to DNAViewerGUI
-    # DNAViewerGUI(pandas_series)
 
 
     """
