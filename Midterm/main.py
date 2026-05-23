@@ -3,7 +3,7 @@ import tkinter as tk
 
 
 def main():
-    filename = "csv/Presidents.csv"
+    filename = "../SQL/Presidents.csv"
 
     df = CSVLoader(filename)
 
