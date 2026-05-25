@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import re
 from SQL import QueryBuilder, CommandExecutor
 
@@ -14,38 +15,108 @@ def parse_table_name(filename):
         return name_only
     return None
 
+
+
 def db_name(filename):
     db_file = re.sub(r'.csv', '.db',  filename)
     return db_file
 
 
+
 def main():
 
     # csv file
-    csv_file = "Temperature.csv"
+    csv_file = "Presidents.csv"
 
     # Table name will be the csv file without .csv
     table_name = parse_table_name(csv_file)
-    print(table_name)
+    print(f"Table name: {table_name}")
 
 
     # 1. Read CSV using pandas
     df = pd.read_csv(csv_file)
-    # print(df)
-    # 2. store columns into a variable
-    columns = df.columns
 
-    # 3. Make a connection to a database
-    # replace .csv file extension to .db
-    db_file = db_name(csv_file)
-    new_db = CommandExecutor(db_file)
+    # clean empty spaces in columns
+    df.columns = df.columns.str.strip()
+    for column in df.columns[1:]:
+        df[column] = df[column].str.strip()
+
+    df.columns = [re.sub(r' ','_', key) for key in df.columns]
+    # print(df.columns)
+    row_dict = df.iloc[0].to_dict()
+
+    df_dict = df.to_dict(orient='records')
 
 
-    # conn = ce.create_connection
-    print(new_db)
+    # 3. replace .csv file extension to .db
+    db_filename = db_name(csv_file)
 
-    cursor.execute(create_table_query)
-    conn.commit()
+    # 4. Initialize the Database
+    ce = CommandExecutor(db_filename)
+
+    # 5. Make a connection to the database
+    print(f"Making a connection to the {db_filename}...")
+    ce.create_connection()
+
+    # 6. Create a Cursor Object to execute SQL queries
+    cursor = ce.create_cursor()
+
+    # 7. Initialize the Table
+    qb = QueryBuilder(table_name, **df)
+
+    # Create the table
+    cursor.execute(qb.create_table())
+
+    """
+    data={"Presidency": 45, "President": "Donald Trump",
+                                     "Wikipedia_Entry": "https://en.wikipedia.org/wiki/Donald_Trump",
+                                     "Took_office": "01/05/2016", "Left_office": "11/11/2020", "Party": "Republican", "Portrait": "trump.gif","thumbnail":"trump.gif", "Home_state":"New York"}"""
+
+
+
+
+    for row in df_dict:
+        sql_insert, values = qb.dispatcher("INSERT", data=row)
+        cursor.execute(sql_insert, values)
+
+
+    sql_update = qb.dispatcher("UPDATE",
+                  data={"Party":"Democratic"},
+                  where={"Party":"Whig"})
+
+
+    cursor.execute(sql_update)
+
+
+    sql_delete, value = qb.dispatcher("DELETE", where={"Presidency":10})
+    cursor.execute(sql_delete, value)
+
+    print("Performing to drop table...")
+    # cursor.execute(qb.dispatcher("DROP"))
+    # cursor.execute(sql_insert, values)
+    # for every row insert into the SQL table
+    # for row in df_dict:
+    #     cursor.execute(sql_insert, row)
+
+    # build the select
+    # sql_select = qb.build_select()
+    # cursor.execute(sql_select)
+    # rows = cursor.fetchone()
+    # for row in rows:
+    #     print(row)
+
+
+
+    ce.commit()
+
+    # 8. Create the table in the Database
+    # db_table_created = cursor.execute(database.create_table)
+
+    # print(db_table_created)
+
+
+
+
 
 
     # QueryBuilder(table_name, columns)
