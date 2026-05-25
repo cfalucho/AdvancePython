@@ -43,7 +43,6 @@ def main():
 
     df.columns = [re.sub(r' ','_', key) for key in df.columns]
     # print(df.columns)
-    row_dict = df.iloc[0].to_dict()
 
     df_dict = df.to_dict(orient='records')
 
@@ -64,7 +63,7 @@ def main():
     # 7. Initialize the Table
     qb = QueryBuilder(table_name, **df)
 
-    # Create the table
+    # ========= CREATE TABLE QUERY  =========
     cursor.execute(qb.create_table())
 
     """
@@ -72,32 +71,35 @@ def main():
                                      "Wikipedia_Entry": "https://en.wikipedia.org/wiki/Donald_Trump",
                                      "Took_office": "01/05/2016", "Left_office": "11/11/2020", "Party": "Republican", "Portrait": "trump.gif","thumbnail":"trump.gif", "Home_state":"New York"}"""
 
+    data = {"Presidency": 45, "President": "Donald Trump",
+            "Wikipedia_Entry": "https://en.wikipedia.org/wiki/Donald_Trump",
+            "Took_office": "01/05/2016", "Left_office": "11/11/2020",
+            "Party": "Republican", "Portrait": "trump.gif",
+            "thumbnail": "trump.gif", "Home_state": "New York"}
 
 
+    # ========= Single INSERT QUERY  =========
+    sql_insert, values = qb.dispatcher("INSERT", data=data)
+    cursor.execute(sql_insert, values)
 
-    for row in df_dict:
-        sql_insert, values = qb.dispatcher("INSERT", data=row)
-        cursor.execute(sql_insert, values)
+    # ========= Multiple INSERT QUERY  =========
+    # for row in df_dict:
+    #     sql_insert, values = qb.dispatcher("INSERT", data=row)
+    #     cursor.execute(sql_insert, values)
 
-
+    # ========= UPDATE QUERY  =========
     sql_update = qb.dispatcher("UPDATE",
-                  data={"Party":"Democratic"},
+                  data={"Party":"whig"},
                   where={"Party":"Whig"})
 
 
     cursor.execute(sql_update)
 
+    # ========= DELETE QUERY  =========
+    # sql_delete, value = qb.dispatcher("DELETE", where={"Presidency":1})
+    # cursor.execute(sql_delete, value)
 
-    sql_delete, value = qb.dispatcher("DELETE", where={"Presidency":10})
-    cursor.execute(sql_delete, value)
-
-    print("Performing to drop table...")
-    # cursor.execute(qb.dispatcher("DROP"))
-    # cursor.execute(sql_insert, values)
-    # for every row insert into the SQL table
-    # for row in df_dict:
-    #     cursor.execute(sql_insert, row)
-
+    # ========= SELECT QUERY  =========
     # build the select
     # sql_select = qb.build_select()
     # cursor.execute(sql_select)
@@ -106,25 +108,14 @@ def main():
     #     print(row)
 
 
+    # ========= DROP TABLE QUERY  =========
+    # print("Performing to drop table...")
+    # cursor.execute(qb.dispatcher("DROP"))
+    # cursor.execute(sql_insert, values)
 
     ce.commit()
 
-    # 8. Create the table in the Database
-    # db_table_created = cursor.execute(database.create_table)
 
-    # print(db_table_created)
-
-
-
-
-
-
-    # QueryBuilder(table_name, columns)
-
-
-
-
-    # 3. Then into SQLite Table
 
 if __name__ == "__main__":
     main()
