@@ -54,6 +54,7 @@ Execution results are returned to the GUI for display.
 Workflow
 Load CSV files with pandas.read_csv()
 Convert each DataFrame into an SQLite table
+
 Use the GUI to trigger:
 Table creation
 Row insertion

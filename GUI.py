@@ -113,9 +113,7 @@ class GUI:
         self._title_label_right.pack(side='top', fill='x')
 
     def _build_frames(self):
-        """
-        Builds the left and right frames
-        """
+
         # === Left Frame ===
         self._frame_left = tk.Frame(self._root,
                                     width=200,
@@ -137,17 +135,12 @@ class GUI:
                                expand=True, fill='both')
 
     def _build_variables(self):
-        """
-        Builds variables which will be used to get values
-        """
+
         self._radio_btn_list = ["table", "tr", "th", "td"]
         self._var_string_value = tk.StringVar(self._root,
                                               f"{self._radio_btn_list[0]}")
 
     def _build_window_configuration(self):
-        """
-        Builds the window configuration
-        """
         self._root = tk.Tk()
         self._root.title("Web Scraper App")
         self._root.geometry("1200x1900")

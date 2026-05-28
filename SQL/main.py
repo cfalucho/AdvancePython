@@ -1,13 +1,9 @@
 import pandas as pd
-import numpy as np
 import re
 from SQL import QueryBuilder, CommandExecutor
+from GUI import GUI
 
-
-# from SQL import CommandExecutor
-
-
-def parse_table_name(filename):
+def table_name(filename):
     # remove .csv extension and use the file name for table name
     match = re.search(r"^(.+)\.csv$", filename)
     if match:
@@ -15,105 +11,55 @@ def parse_table_name(filename):
         return name_only
     return None
 
-
-
 def db_name(filename):
     db_file = re.sub(r'.csv', '.db',  filename)
     return db_file
 
+class DataFrame:
+    def __init__(self, csv_file):
+        self.database_filename = db_name(csv_file)
+        self.table_name = table_name(csv_file)
+
+        self.dataframe = pd.read_csv(csv_file, dtype=str)
+        print(self.dataframe)
+
+        self.dataframe.columns = self.dataframe.columns.str.strip()
+        self.dataframe.columns = [re.sub(r' ', '_', key)
+                                  for key in self.dataframe.columns]
+
+
+    def get_dataframe(self):
+        return self.dataframe
+
+    def to_dict(self):
+        df_dict = self.dataframe.to_dict(orient='records')
+        return df_dict
+
+    def get_db_filename(self):
+        return self.database_filename
+
+    def get_table_name(self):
+        return self.table_name
+
+    def get_df_cols(self):
+        return self.dataframe.columns
 
 
 def main():
-
     # csv file
     csv_file = "Presidents.csv"
 
-    # Table name will be the csv file without .csv
-    table_name = parse_table_name(csv_file)
-    print(f"Table name: {table_name}")
+    # DataFrame
+    df = DataFrame(csv_file)
 
+    # QueryBuilder
+    qb = QueryBuilder()
 
-    # 1. Read CSV using pandas
-    df = pd.read_csv(csv_file)
+    # CommandExecutor
+    ce = CommandExecutor(df, qb)
 
-    # clean empty spaces in columns
-    df.columns = df.columns.str.strip()
-    for column in df.columns[1:]:
-        df[column] = df[column].str.strip()
-
-    df.columns = [re.sub(r' ','_', key) for key in df.columns]
-    # print(df.columns)
-
-    df_dict = df.to_dict(orient='records')
-
-
-    # 3. replace .csv file extension to .db
-    db_filename = db_name(csv_file)
-
-    # 4. Initialize the Database
-    ce = CommandExecutor(db_filename)
-
-    # 5. Make a connection to the database
-    print(f"Making a connection to the {db_filename}...")
-    ce.create_connection()
-
-    # 6. Create a Cursor Object to execute SQL queries
-    cursor = ce.create_cursor()
-
-    # 7. Initialize the Table
-    qb = QueryBuilder(table_name, **df)
-
-    # ========= CREATE TABLE QUERY  =========
-    cursor.execute(qb.create_table())
-
-    """
-    data={"Presidency": 45, "President": "Donald Trump",
-                                     "Wikipedia_Entry": "https://en.wikipedia.org/wiki/Donald_Trump",
-                                     "Took_office": "01/05/2016", "Left_office": "11/11/2020", "Party": "Republican", "Portrait": "trump.gif","thumbnail":"trump.gif", "Home_state":"New York"}"""
-
-    data = {"Presidency": 45, "President": "Donald Trump",
-            "Wikipedia_Entry": "https://en.wikipedia.org/wiki/Donald_Trump",
-            "Took_office": "01/05/2016", "Left_office": "11/11/2020",
-            "Party": "Republican", "Portrait": "trump.gif",
-            "thumbnail": "trump.gif", "Home_state": "New York"}
-
-
-    # ========= Single INSERT QUERY  =========
-    sql_insert, values = qb.dispatcher("INSERT", data=data)
-    cursor.execute(sql_insert, values)
-
-    # ========= Multiple INSERT QUERY  =========
-    # for row in df_dict:
-    #     sql_insert, values = qb.dispatcher("INSERT", data=row)
-    #     cursor.execute(sql_insert, values)
-
-    # ========= UPDATE QUERY  =========
-    sql_update = qb.dispatcher("UPDATE",
-                  data={"Party":"whig"},
-                  where={"Party":"Whig"})
-
-
-    cursor.execute(sql_update)
-
-    # ========= DELETE QUERY  =========
-    # sql_delete, value = qb.dispatcher("DELETE", where={"Presidency":1})
-    # cursor.execute(sql_delete, value)
-
-    # ========= SELECT QUERY  =========
-    # build the select
-    # sql_select = qb.build_select()
-    # cursor.execute(sql_select)
-    # rows = cursor.fetchone()
-    # for row in rows:
-    #     print(row)
-
-
-    # ========= DROP TABLE QUERY  =========
-    # print("Performing to drop table...")
-    # cursor.execute(qb.dispatcher("DROP"))
-    # cursor.execute(sql_insert, values)
-
-    ce.commit()
+    # GUI
+    GUI(ce, df)
 
 
 
