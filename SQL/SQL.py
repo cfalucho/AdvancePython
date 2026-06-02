@@ -28,9 +28,11 @@ class QueryBuilder:
 
 
     def build_insert(self, table_name, row):
+        print(row)
         cols_name = ", ".join(f"{cols_n}" for cols_n in row.keys())
         cols_len = len(row.keys())
         values = tuple(row.values())
+        print(values)
 
         placeholders = ",".join("?" * cols_len)
         sql_insert = f"""

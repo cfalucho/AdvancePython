@@ -104,6 +104,7 @@ class GUI:
 
         rows_data = []
         df_dict = self.dataframe.to_dict()
+        print(df_dict)
         for row in df_dict:
             # print(row)
             rows_data.append(self.ce.execute("INSERT", table_name=self.table_name, row=row))
