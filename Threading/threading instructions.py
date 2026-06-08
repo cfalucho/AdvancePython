@@ -15,7 +15,6 @@
 # A shared queue for all client-to-server messages
 # Integration with QueryBuilder and CommandExecutor
 # Client (Producer)
-# The Client runs in its own thread and:
 #
 # Loads CSV data into a DataFrame
 # Uses QueryBuilder to generate SQL queries
