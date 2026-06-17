@@ -8,113 +8,6 @@ from SQL import QueryBuilder, CommandExecutor
 from queue import Queue
 
 
-def database_filename(filename):
-    db_file = re.sub(r'.csv', '.db',  filename)
-    return db_file
-
-def table_name(filename):
-    # remove .csv extension and use the file name for table name
-    match = re.search(r"^(.+)\.csv$", filename)
-    if match:
-        name_only = match.group(1)
-        return name_only
-    return None
-
-class DataFrame:
-    def __init__(self, csv_file):
-        self.df = pd.read_csv(csv_file, dtype=str)
-        self.db_filename = database_filename(csv_file)
-        self.table_name = table_name(csv_file)
-        self.df.columns = self.df.columns.str.strip()
-        self.df.columns = [re.sub(r' ', '_', key)
-                                  for key in self.df.columns]
-
-
-
-    def get_db_filename(self):
-        return self.db_filename
-
-    def get_table_name(self):
-        return self.table_name
-
-    def get_df(self):
-        return self.df
-
-    def get_list(self):
-        return self.df.to_dict(orient='records')
-
-    def iter_rows(self):
-        for index, row in self.df.iterrows():
-            yield row.to_dict()
-
-    def get_cols(self):
-        return tuple(self.df.columns)
-
-
-
-class Producer(threading.Thread):
-    def __init__(self, csv_file, shared_queue):
-
-        super().__init__()
-        self.csv_file = csv_file
-        self.queue = shared_queue
-        self.df = DataFrame(csv_file)
-
-    def run(self):
-        print("Producer running...")
-
-        table_task = {'seq_num': 0, 'query': 'CREATE', 'kwargs':
-                     {'table_name': self.df.get_table_name(), 'row': self.df.get_cols()}
-                      }
-        self.queue.put(table_task)
-        logging.info(
-            logging.info(f'Producer generating SEQ #{table_task['seq_num']}'))
-
-        rows = self.df.iter_rows()
-        for seq_num, row in enumerate(rows, start=1):
-            query_task = {'seq_num': seq_num, 'query': 'INSERT', 'kwargs':
-                     {'table_name': self.df.get_table_name(), 'row': row}}
-            self.queue.put(query_task)
-            print(f'Inside producer: {query_task['seq_num']}')
-            logging.info(f'Producer generating SEQ #{query_task['seq_num']}: {query_task['query']}')
-            time.sleep(0.10)
-
-        self.queue.put(None)
-
-
-
-
-
-class Consumer(threading.Thread):
-    def __init__(self, command_executor, shared_queue):
-        super().__init__()
-        self.queue = shared_queue
-        self.ce = command_executor
-
-    def run(self):
-        print("Server now running." + "\n" +
-              "Listening for requests..")
-        while True:
-            # print(self.queue.get())
-            task = self.queue.get()
-
-            if task is None:
-                print("No more items in queue.")
-                break
-            seq_num = task['seq_num']
-            sql_query = task['query']
-            table_name = task['kwargs']['table_name']
-            row=task['kwargs']['row']
-            # print(task['query'], task['kwargs']['table_name'], task['kwargs']['row'])
-            self.ce.execute(sql_query, table_name=table_name, row=row)
-            logging.info(
-                f'Consumer processing SEQ #{seq_num} {sql_query}')
-            time.sleep(1)
-
-
-
-
-
 
 def with_threads(producer, df, shared_queue):
     producer.start('CREATE', cols=df.get_cols())
@@ -143,11 +36,136 @@ def without_threads(ce, df):
     finish = time.perf_counter()
     print(f'Finished in {round(finish-start, 3)} second(s)')
 
-class GUI:
-    def __init__(self, producer, consumer, shared_queue):
-        self.client = producer
-        self.server = consumer
+
+def database_filename(filename):
+    db_file = re.sub(r'.csv', '.db',  filename)
+    return db_file
+
+def table_name(filename):
+    # remove .csv extension and use the file name for table name
+    match = re.search(r"^(.+)\.csv$", filename)
+    if match:
+        name_only = match.group(1)
+        return name_only
+    return None
+
+class DataFrame:
+    def __init__(self, csv_file):
+        self.df = pd.read_csv(csv_file, dtype=str)
+        self.db_filename = database_filename(csv_file)
+        self.table_name = table_name(csv_file)
+        self.df.columns = self.df.columns.str.strip()
+        self.df.columns = [re.sub(r' ', '_', key)
+                                  for key in self.df.columns]
+
+
+    def get_db_filename(self):
+        return self.db_filename
+
+    def get_table_name(self):
+        return self.table_name
+
+    def get_df(self):
+        return self.df
+
+    def get_list(self):
+        return self.df.to_dict(orient='records')
+
+    def iter_rows(self):
+        for index, row in self.df.iterrows():
+            yield row.to_dict()
+
+    def get_cols(self):
+        return tuple(self.df.columns)
+
+
+
+class Producer(threading.Thread):
+    def __init__(self, csv_file, shared_queue, gui):
+        super().__init__()
+        self.csv_file = csv_file
         self.queue = shared_queue
+        self.df = DataFrame(csv_file)
+        self.gui = gui
+
+    def run(self):
+        print("Producer running...")
+
+        table_task = {'seq_num': 0, 'query': 'CREATE', 'kwargs':
+                     {'table_name': self.df.get_table_name(), 'row': self.df.get_cols()}
+                      }
+        self.queue.put(table_task)
+
+        if self.gui:
+            message = f"PRODUCER: SEQ #{table_task['seq_num']} [{table_task['query']}]"
+            self.gui.root.after(0, self.gui.update_producer_text, message)
+        # logging.info(
+        #     logging.info(f'Producer generating SEQ #{table_task['seq_num']}'))
+
+        rows = self.df.iter_rows()
+        for seq_num, row in enumerate(rows, start=1):
+            query_task = {'seq_num': seq_num, 'query': 'INSERT', 'kwargs':
+                     {'table_name': self.df.get_table_name(), 'row': row}}
+            self.queue.put(query_task)
+
+            if self.gui:
+                message = f"PRODUCER: SEQ #{query_task['seq_num']} [{query_task['query']}]"
+                self.gui.root.after(0, self.gui.update_producer_text, message)
+
+            # print(f'Inside producer: {query_task['seq_num']}')
+            # logging.info(f'Producer generating SEQ #{query_task['seq_num']}: {query_task['query']}')
+            time.sleep(0.05)
+
+        self.queue.put(None)
+
+
+
+
+
+class Consumer(threading.Thread):
+    def __init__(self, command_executor, shared_queue, gui):
+        super().__init__()
+        self.queue = shared_queue
+        self.ce = command_executor
+        self.gui = gui
+
+    def run(self):
+        print("Server now running." + "\n" +
+              "Listening for requests..")
+        while True:
+            # print(self.queue.get())
+            task = self.queue.get()
+
+            if task is None:
+                print("No more items in queue.")
+                break
+            seq_num = task['seq_num']
+            sql_query = task['query']
+            table_name = task['kwargs']['table_name']
+            row=task['kwargs']['row']
+            # print(task['query'], task['kwargs']['table_name'], task['kwargs']['row'])
+            self.ce.execute(sql_query, table_name=table_name, row=row)
+
+            if self.gui:
+                message = f"CONSUMER: SEQ #{seq_num} {sql_query} on {table_name}"
+                self.gui.root.after(0, self.gui.update_consumer_text, message)
+
+            # logging.info(
+            #     f'Consumer processing SEQ #{seq_num} {sql_query}')
+            time.sleep(0.10)
+            self.queue.task_done()
+
+
+
+
+
+
+class GUI:
+    def __init__(self, csv_file, ce):
+        self.queue = Queue()
+
+        self.client = Producer(csv_file, self.queue, self)
+        self.server = Consumer(ce, self.queue, self)
 
 
         self.root = tk.Tk()
@@ -192,66 +210,23 @@ class GUI:
         self.consumer_text.grid(row=0, column=0)
 
     def build_buttons(self):
-        self.start_client = tk.Button(self.root,
-                               text="Start Client",
-                               font=("Inter", 18),
+        self.start_btn = tk.Button(self.root,
+                               text="Start",
+                               font=("Inter", 25),
                                background="black",
-                               command=self.start_client,
+                               command=self.start_threads,
                                padx=1)
 
-        self.start_client.grid(row=2, column=1)
-
-        self.start_server = tk.Button(self.root,
-                                      text="Start Server",
-                                      font=("Inter", 18),
-                                      background="black",
-                                      command=self.start_server,
-                                      padx=1)
-
-        self.start_server.grid(row=2, column=2)
+        self.start_btn.grid(row=2, columnspan=3)
 
 
 
-    def start_client(self):
-        self.start_client.config(state="disabled")
-
-        tkinter_thread = threading.Thread(target=self.queue_producer_log,
-                                           daemon=True)
-        tkinter_thread.start()
-
-    def start_server(self):
-        self.server.start()
-        self.queue_consumer_log()
 
 
-    def queue_producer_log(self):
+    def start_threads(self):
         self.client.start()
-        while True:
-            # task = self.queue.get()
-            query_text = (f'PRODUCER: SEQ #{task['seq_num']}: ')
-                          # f'{task['query']}: {task['kwargs']['row']}') + "\n"
-            logging.info(f'Producer generating SEQ #{task['seq_num']}: {task['query']}')
+        self.server.start()
 
-            self.root.after(0, self.update_producer_text, query_text)
-            time.sleep(2)
-            # self.queue.task_done()
-            if task is None:
-                self.queue.task_done()
-                break
-
-    def queue_consumer_log(self):
-        while True:
-            # task = self.queue.get()
-            query_text = f"test"
-            # query_text = (f'CONSUMER: SEQ #{task['seq_num']}: ')
-            # f'{task['query']}: {task['kwargs']['row']}') + "\n"
-
-            self.root.after(0, self.update_consumer_text, query_text)
-            time.sleep(2)
-            self.queue.task_done()
-            if task is None:
-                self.queue.task_done()
-                break
 
     def update_producer_text(self, text):
         self.producer_text.config(state='normal')
@@ -267,32 +242,19 @@ class GUI:
 
 
 def main():
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter(
-        '[%(levelname)s] %(name)s: [%(threadName)s] %(message)s'))
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
+    # handler = logging.StreamHandler()
+    # handler.setFormatter(logging.Formatter(
+    #     '[%(levelname)s] %(name)s: [%(threadName)s] %(message)s'))
+    # logger = logging.getLogger()
+    # logger.setLevel(logging.DEBUG)
+    # logger.addHandler(handler)
 
-    csv_file = "Presidents.csv"
-    shared_queue = Queue()
+    csv_file = "Temperature.csv"
     df = DataFrame(csv_file)
     qb = QueryBuilder()
     ce = CommandExecutor(df, qb)
 
-
-
-    producer = Producer(csv_file, shared_queue)
-    # producer.start()
-    consumer = Consumer(ce, shared_queue)
-    # consumer.start()
-    GUI(producer, consumer, shared_queue)
-
-
-    # while not shared_queue.empty():
-    #     print("Queue Item:", shared_queue.get())
-
-
+    GUI(csv_file, ce)
 
 
 if __name__ == '__main__':
