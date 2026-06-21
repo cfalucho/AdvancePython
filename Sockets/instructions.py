@@ -22,6 +22,7 @@
 # Displays separate log windows
 # Provides a button to send queries
 # Uses the same threading and logging pattern demonstrated in the Socket Dice Example
+
 # Client Class Requirements
 # Establish a TCP socket connection to the server
 # Load CSV data into a DataFrame
