@@ -101,7 +101,7 @@ def parse_table_name(filename):
 
 class CommandExecutor:
     def __init__(self):
-        # self._database_file = dataframe.get_db_filename()
+        self._database_file = dataframe.get_db_filename()
         # self._table_name = dataframe.get_table_name()
         # self._qb = QueryBuilder()
         self.conn = None
@@ -115,6 +115,9 @@ class CommandExecutor:
             "DELETE": self._execute_delete,
             "DROP"  : self._execute_drop,
         }
+
+    def connect(self, csv_file):
+        self.conn = sqlite3.connect(csv_file)
 
     def cursor(self):
         return self.conn.cursor()
